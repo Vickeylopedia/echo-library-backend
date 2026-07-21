@@ -1,0 +1,9 @@
+.gradle
+build
+out
+.env
+.idea
+Dockerfile
+railway.json
+README.md
+supabase_schema.sql
