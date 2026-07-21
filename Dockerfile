@@ -1,12 +1,11 @@
-# ---- Build stage ----
-FROM gradle:8.10-jdk21 AS build
+Build stage
+FROM gradle:8.8-jdk17 AS build
+COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
-COPY --chown=gradle:gradle . .
-RUN gradle shadowJar --no-daemon
-
-# ---- Runtime stage ----
-FROM eclipse-temurin:21-jre
-WORKDIR /app
-COPY --from=build /home/gradle/src/build/libs/echo-library-backend-1.0.0-all.jar /app/app.jar
+RUN gradle buildFatJar --no-daemon
+Run stage
+FROM openjdk:17-jdk-slim
 EXPOSE 8080
-CMD ["java", "-jar", "/app/app.jar"]
+RUN mkdir /app
+COPY --from=build /home/gradle/src/build/libs/*-all.jar /app/echo-library-backend.jar
+ENTRYPOINT ["java", "-jar", "/app/echo-library-backend.jar"]
